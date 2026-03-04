@@ -27,6 +27,7 @@
       <nav class="header-nav">
         <a href="#features">Features</a>
         <a href="#pricing">Pricing</a>
+        <a href="#manage-subscription">Account</a>
         <a href="#beta-access">Beta Access</a>
       </nav>
     </div>
@@ -173,6 +174,26 @@
           <button type="button" class="btn btn-primary btn-block btn-checkout" data-plan="annual">Start Free
             Trial</button>
         </article>
+      </div>
+    </section>
+
+    <!-- Manage Subscription -->
+    <section id="manage-subscription" class="section reveal reveal-delay-3">
+      <div class="section-header">
+        <div class="badge badge-muted">Account</div>
+        <h2>Manage your subscription</h2>
+        <p class="section-sub">Update payment details, change plans, or cancel anytime.</p>
+      </div>
+      <div class="panel panel-compact">
+        <form id="manage-sub-form" class="access-form">
+          <label for="manage-sub-email" class="sr-only">Email used at checkout</label>
+          <input id="manage-sub-email" name="email" class="input" type="email" autocomplete="email"
+            placeholder="Email used at checkout" required>
+          <button type="submit" class="btn btn-primary" id="manage-sub-btn">Manage Subscription</button>
+        </form>
+        <p id="manage-sub-status" class="status status-neutral" role="status" aria-live="polite">
+          Enter the email you used when subscribing.
+        </p>
       </div>
     </section>
 

@@ -294,6 +294,50 @@ el.copyLicenseKey.addEventListener("click", async () => {
 });
 
 // ---------------------------------------------------------------------------
+// Manage Subscription (Customer Portal)
+// ---------------------------------------------------------------------------
+const manageSubForm = document.getElementById("manage-sub-form");
+const manageSubEmail = document.getElementById("manage-sub-email");
+const manageSubBtn = document.getElementById("manage-sub-btn");
+const manageSubStatus = document.getElementById("manage-sub-status");
+
+if (manageSubForm) {
+  manageSubForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = manageSubEmail.value.trim();
+    if (!email) {
+      manageSubStatus.className = "status status-error";
+      manageSubStatus.textContent = "Please enter your email.";
+      return;
+    }
+
+    manageSubBtn.disabled = true;
+    manageSubBtn.textContent = "Redirecting…";
+    manageSubStatus.className = "status status-neutral";
+    manageSubStatus.textContent = "Looking up your subscription…";
+
+    try {
+      const res = await fetch(`${apiBase()}/v1/create-portal-session`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not find subscription");
+
+      // Redirect to Stripe Customer Portal
+      window.location.href = data.url;
+    } catch (err) {
+      manageSubBtn.disabled = false;
+      manageSubBtn.textContent = "Manage Subscription";
+      manageSubStatus.className = "status status-error";
+      manageSubStatus.textContent = err.message || "Something went wrong. Please try again.";
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Init
 // ---------------------------------------------------------------------------
 handlePostPurchase();
