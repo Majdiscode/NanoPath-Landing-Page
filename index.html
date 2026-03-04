@@ -1,110 +1,246 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="NanoPath private beta download portal for invited particle detection testers.">
-  <title>NanoPath Beta | Private Download Access</title>
+  <meta name="description"
+    content="NanoPath — AI-powered nanoparticle tracking and analysis software for research labs.">
+  <title>NanoPath | Nanoparticle Tracking & Analysis</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
+
 <body>
   <div class="bg-glow bg-glow--one" aria-hidden="true"></div>
   <div class="bg-glow bg-glow--two" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--three" aria-hidden="true"></div>
 
   <header class="site-header">
     <div class="container header-inner">
-      <a href="#" class="brand">NanoPath Beta</a>
-      <a class="btn btn-ghost" href="https://github.com/Majdiscode/particle-detection" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="#" class="brand">
+        <span class="brand-icon">◈</span>
+        NanoPath
+      </a>
+      <nav class="header-nav">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#beta-access">Beta Access</a>
+      </nav>
     </div>
   </header>
 
   <main class="container main-content">
+
+    <!-- Hero -->
     <section class="hero reveal">
-      <p class="eyebrow">Private Tester Portal</p>
-      <h1>Download NanoPath for free during the invite-only beta.</h1>
-      <p class="hero-copy">
-        Share a private key with testers, unlock macOS or Windows installers instantly,
-        and keep pricing disabled until paid monthly and one-time plans go live.
-      </p>
+      <div class="badge badge-accent">Now in Private Beta</div>
+      <h1>Track nanoparticles<br>with precision.</h1>
+      <p class="hero-sub">AI-powered detection, MSD analysis, and heatmap visualizations — all from a single desktop
+        app.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#beta-access">Unlock Access</a>
-        <a class="btn btn-secondary" href="#downloads">See Downloads</a>
+        <a class="btn btn-primary btn-lg" href="#pricing">Get Started</a>
+        <a class="btn btn-ghost btn-lg" href="#features">Learn More</a>
       </div>
     </section>
 
-    <section id="beta-access" class="panel reveal reveal-delay-1">
-      <div class="panel-head">
-        <p class="eyebrow">Access Control</p>
-        <h2>Use an invite key to activate free beta access</h2>
+    <!-- Features -->
+    <section id="features" class="section reveal reveal-delay-1">
+      <div class="section-header">
+        <div class="badge badge-muted">Features</div>
+        <h2>Everything you need for particle analysis</h2>
       </div>
+      <div class="feature-grid">
+        <article class="card card-feature">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+          </div>
+          <h3>Smart Detection</h3>
+          <p>Automatic particle detection with tunable parameters. Supports brightfield & fluorescence modes.</p>
+        </article>
+        <article class="card card-feature">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+          </div>
+          <h3>MSD Analysis</h3>
+          <p>Compute mean squared displacement, diffusion coefficients, and anomalous exponents in seconds.</p>
+        </article>
+        <article class="card card-feature">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 9h18M9 21V9" />
+            </svg>
+          </div>
+          <h3>Heatmaps & Plots</h3>
+          <p>Generate publication-ready trajectory heatmaps and cumulative density plots with custom colormaps.</p>
+        </article>
+        <article class="card card-feature">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </div>
+          <h3>Selective Tracking</h3>
+          <p>Choose specific particles from a calibration frame and track only what matters to your research.</p>
+        </article>
+        <article class="card card-feature">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </div>
+          <h3>CSV Export</h3>
+          <p>Export all trajectory data, velocities, and MSD results to CSV for downstream analysis.</p>
+        </article>
+        <article class="card card-feature">
+          <div class="card-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+          </div>
+          <h3>Cross-Platform</h3>
+          <p>Native desktop app for macOS and Windows with automatic updates and offline support.</p>
+        </article>
+      </div>
+    </section>
 
-      <form id="access-form" class="access-form">
-        <label for="access-key" class="sr-only">Tester access key</label>
-        <input
-          id="access-key"
-          name="access-key"
-          class="input"
-          type="text"
-          autocomplete="off"
-          placeholder="Enter your tester key"
-          required
-        >
-        <button type="submit" class="btn btn-primary">Unlock Free Access</button>
-      </form>
+    <!-- Pricing -->
+    <section id="pricing" class="section reveal reveal-delay-2">
+      <div class="section-header">
+        <div class="badge badge-muted">Pricing</div>
+        <h2>Simple, transparent pricing</h2>
+        <p class="section-sub">Choose the plan that fits your lab. Cancel anytime.</p>
+      </div>
+      <div class="pricing-grid">
+        <article class="card card-pricing">
+          <div class="pricing-head">
+            <h3>Monthly</h3>
+            <p class="pricing-desc">For active research projects</p>
+          </div>
+          <div class="pricing-amount">
+            <span class="price">$19</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="pricing-features">
+            <li>Unlimited particle tracking</li>
+            <li>All analysis tools</li>
+            <li>macOS & Windows</li>
+            <li>2 device activations</li>
+            <li>Auto-updates</li>
+          </ul>
+          <p class="pricing-trial">7-day free trial — no charge today</p>
+          <button type="button" class="btn btn-secondary btn-block btn-checkout" data-plan="monthly">Start Free
+            Trial</button>
+        </article>
 
-      <p id="access-status" class="status status-neutral" role="status" aria-live="polite">
-        Access locked. Enter a valid tester key to enable downloads.
+        <article class="card card-pricing card-pricing--popular">
+          <div class="badge badge-accent pricing-badge">Best Value</div>
+          <div class="pricing-head">
+            <h3>Annual</h3>
+            <p class="pricing-desc">Save 35% with yearly billing</p>
+          </div>
+          <div class="pricing-amount">
+            <span class="price">$149</span>
+            <span class="price-period">/year</span>
+          </div>
+          <ul class="pricing-features">
+            <li>Everything in Monthly</li>
+            <li>Priority support</li>
+            <li>macOS & Windows</li>
+            <li>2 device activations</li>
+            <li>Auto-updates</li>
+          </ul>
+          <p class="pricing-trial">7-day free trial — no charge today</p>
+          <button type="button" class="btn btn-primary btn-block btn-checkout" data-plan="annual">Start Free
+            Trial</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- Post-purchase success (hidden by default) -->
+    <section id="purchase-success" class="section panel panel-success" hidden>
+      <div class="success-icon" aria-hidden="true">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      </div>
+      <h2>Payment successful!</h2>
+      <p class="success-sub">Your license key is below. Copy it and paste it into the NanoPath desktop app to activate.
       </p>
+      <div class="license-display">
+        <code id="license-key-value">Loading…</code>
+        <button type="button" id="copy-license-key" class="btn btn-ghost btn-sm">Copy</button>
+      </div>
+      <p id="license-status" class="caption"></p>
+    </section>
 
-      <div class="share-row">
-        <button id="copy-link-button" type="button" class="btn btn-secondary" disabled>Copy Private Invite Link</button>
-        <p class="caption">Copied link includes the tester key for invited users.</p>
+    <!-- Beta access -->
+    <section id="beta-access" class="section reveal reveal-delay-3">
+      <div class="section-header">
+        <div class="badge badge-muted">Beta Program</div>
+        <h2>Have an invite key?</h2>
+        <p class="section-sub">Enter your tester key to unlock free downloads during the beta period.</p>
+      </div>
+      <div class="panel panel-compact">
+        <form id="access-form" class="access-form">
+          <label for="access-key" class="sr-only">Tester access key</label>
+          <input id="access-key" name="access-key" class="input" type="text" autocomplete="off"
+            placeholder="Enter your tester key" required>
+          <button type="submit" class="btn btn-primary">Unlock</button>
+        </form>
+        <p id="access-status" class="status status-neutral" role="status" aria-live="polite">
+          Enter a valid invite key to enable downloads.
+        </p>
       </div>
     </section>
 
-    <section id="downloads" class="section reveal reveal-delay-2">
-      <div class="section-head">
-        <p class="eyebrow">Downloads</p>
-        <h2>Choose your operating system</h2>
+    <!-- Downloads -->
+    <section id="downloads" class="section reveal reveal-delay-4">
+      <div class="section-header">
+        <h2>Downloads</h2>
+        <p id="version-badge" class="version-badge"></p>
       </div>
-
-      <p id="version-badge" class="version-badge"></p>
-
       <div class="download-grid">
         <article class="card">
-          <h3>macOS</h3>
-          <p>Universal DMG installer for Apple Silicon and Intel Macs.</p>
-          <a id="download-mac" class="btn btn-primary btn-block is-disabled" href="#" aria-disabled="true" tabindex="-1">Unlock with Tester Key</a>
+          <div class="card-row">
+            <div>
+              <h3>macOS</h3>
+              <p class="card-desc">Universal DMG for Apple Silicon & Intel</p>
+            </div>
+            <a id="download-mac" class="btn btn-primary is-disabled" href="#" aria-disabled="true"
+              tabindex="-1">Locked</a>
+          </div>
         </article>
-
         <article class="card">
-          <h3>Windows</h3>
-          <p>Signed <code>.exe</code> installer for Windows 10 and Windows 11.</p>
-          <a id="download-windows" class="btn btn-primary btn-block is-disabled" href="#" aria-disabled="true" tabindex="-1">Unlock with Tester Key</a>
-        </article>
-      </div>
-    </section>
-
-    <section class="section reveal reveal-delay-3">
-      <div class="section-head">
-        <p class="eyebrow">Future Billing</p>
-        <h2>Paid plans launch after beta</h2>
-      </div>
-
-      <div class="pricing-grid">
-        <article class="card">
-          <h3>Monthly Subscription</h3>
-          <p>Ongoing updates and support for active research teams.</p>
-          <span class="pill">Coming Soon</span>
-        </article>
-
-        <article class="card">
-          <h3>One-Time License</h3>
-          <p>Single purchase option for labs that prefer fixed procurement.</p>
-          <span class="pill">Coming Soon</span>
+          <div class="card-row">
+            <div>
+              <h3>Windows</h3>
+              <p class="card-desc">Installer for Windows 10 & 11</p>
+            </div>
+            <a id="download-windows" class="btn btn-primary is-disabled" href="#" aria-disabled="true"
+              tabindex="-1">Locked</a>
+          </div>
         </article>
       </div>
     </section>
@@ -112,10 +248,11 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>Invite-only beta access. Share keys only with approved testers.</p>
+      <p>&copy; 2026 NanoPath. Invite-only beta access.</p>
     </div>
   </footer>
 
   <script src="./script.js"></script>
 </body>
+
 </html>
