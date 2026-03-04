@@ -9,6 +9,7 @@ const CONFIG = {
     "https://nanopath-download-gate.majdiscode.workers.dev",
   fallbackLocal: "http://127.0.0.1:8787",
   storageKey: "nanopath_beta_access_key",
+  purchaseStorageKey: "nanopath_purchased",
   validKeyHashes: [
     "e860b3d7e556ebd81f4f1d8c5adfa4bfc55d40cbb7a213682faed15d49eea1cf",
     "4614d42a75056835c1ecf373a846e127cf0e840f6bbcc90301ea762fe97c6f2c"
@@ -130,6 +131,11 @@ function setUnlocked(key) {
   setStatus("status-success", "Beta access unlocked. Downloads are available below.");
 }
 
+function unlockPurchasedDownloads(licenseKey) {
+  localStorage.setItem(CONFIG.purchaseStorageKey, licenseKey);
+  updateDownloads(true);
+}
+
 function clearAccess(msg) {
   activeKey = "";
   localStorage.removeItem(CONFIG.storageKey);
@@ -148,6 +154,14 @@ function clearKeyFromUrl() {
 async function initAccess() {
   updateDownloads(false);
   await fetchRelease();
+
+  // Check if user has a purchased license (auto-unlock downloads)
+  const purchasedKey = localStorage.getItem(CONFIG.purchaseStorageKey);
+  if (purchasedKey) {
+    updateDownloads(true);
+    setStatus("status-success", "License active. Downloads are available below.");
+    return;
+  }
 
   if (!window.crypto?.subtle) {
     setStatus("status-error", "Secure key validation is unavailable in this browser.");
@@ -255,6 +269,9 @@ async function handlePostPurchase() {
     el.licenseKeyValue.textContent = data.license_key;
     el.licenseStatus.textContent = "Paste this key into the NanoPath app → Settings → License to activate.";
     el.licenseStatus.className = "caption";
+
+    // Auto-unlock downloads for paying customers
+    unlockPurchasedDownloads(data.license_key);
   } catch (err) {
     el.licenseKeyValue.textContent = "—";
     el.licenseStatus.textContent = err.message || "Could not retrieve your license. Contact support.";
