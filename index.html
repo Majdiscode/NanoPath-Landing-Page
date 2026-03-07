@@ -286,7 +286,7 @@
       </div>
     </section>
 
-    <!-- Post-purchase success (hidden by default) -->
+    <!-- Post-purchase success (full-screen, hidden by default) -->
     <section id="purchase-success" class="section panel panel-success" hidden>
       <div class="success-icon" aria-hidden="true">
         <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -295,9 +295,28 @@
           <polyline points="22 4 12 14.01 9 11.01" />
         </svg>
       </div>
-      <h2>Payment successful!</h2>
-      <p class="success-sub">Your license key is below. Copy it and paste it into the NanoPath desktop app to activate.
-      </p>
+      <h2>Welcome to NanoPath!</h2>
+      <p class="success-sub">Your purchase was successful. Follow these two steps to get started:</p>
+
+      <div class="success-steps">
+        <div class="success-step">
+          <div class="success-step-number">1</div>
+          <div class="success-step-content">
+            <h3>Check your email</h3>
+            <p>We've sent a login link to your email. Click it to access your account dashboard, manage your
+              subscription, and invite team members.</p>
+          </div>
+        </div>
+
+        <div class="success-step">
+          <div class="success-step-number">2</div>
+          <div class="success-step-content">
+            <h3>Activate the desktop app</h3>
+            <p>Copy your license key below and paste it into the NanoPath desktop app → Settings → License.</p>
+          </div>
+        </div>
+      </div>
+
       <div class="license-display">
         <code id="license-key-value">Loading…</code>
         <button type="button" id="copy-license-key" class="btn btn-ghost btn-sm">Copy</button>

@@ -248,12 +248,17 @@ async function handlePostPurchase() {
   const sessionId = params.get("session_id");
   if (!sessionId) return;
 
+  // Hide ALL other main sections so only the success screen is visible
+  document.querySelectorAll(".main-content > .section, .main-content > .hero").forEach((s) => {
+    if (s.id !== "purchase-success") s.hidden = true;
+  });
+
   // Show the success panel
   el.purchaseSuccess.hidden = false;
   el.licenseKeyValue.textContent = "Retrieving your license…";
 
-  // Scroll to it
-  el.purchaseSuccess.scrollIntoView({ behavior: "smooth", block: "center" });
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
   // Clean URL
   const cleanUrl = new URL(location.href);
@@ -267,7 +272,7 @@ async function handlePostPurchase() {
     if (!res.ok) throw new Error(data.error || "Could not retrieve license");
 
     el.licenseKeyValue.textContent = data.license_key;
-    el.licenseStatus.textContent = "Paste this key into the NanoPath app → Settings → License to activate.";
+    el.licenseStatus.textContent = "";
     el.licenseStatus.className = "caption";
 
     // Auto-unlock downloads for paying customers
