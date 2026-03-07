@@ -355,6 +355,19 @@ function renderDashboard(data) {
   } else {
     teamPanel.hidden = true;
   }
+
+  // Disable checkout buttons for active subscribers
+  if (!data.revoked && data.subscription_status !== "canceled") {
+    disableCheckoutButtons();
+  }
+}
+
+function disableCheckoutButtons() {
+  document.querySelectorAll(".btn-checkout").forEach((btn) => {
+    btn.disabled = true;
+    btn.textContent = "Already subscribed";
+    btn.classList.add("is-disabled");
+  });
 }
 
 function showLoginForm() {
