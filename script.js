@@ -294,27 +294,147 @@ el.copyLicenseKey.addEventListener("click", async () => {
 });
 
 // ---------------------------------------------------------------------------
-// Manage Subscription (Customer Portal)
+// Account Login + Dashboard
 // ---------------------------------------------------------------------------
-const manageSubForm = document.getElementById("manage-sub-form");
-const manageSubEmail = document.getElementById("manage-sub-email");
-const manageSubBtn = document.getElementById("manage-sub-btn");
-const manageSubStatus = document.getElementById("manage-sub-status");
+const loginForm = document.getElementById("login-form");
+const loginEmail = document.getElementById("login-email");
+const loginBtn = document.getElementById("login-btn");
+const loginStatus = document.getElementById("login-status");
+const accountLogin = document.getElementById("account-login");
+const accountDashboard = document.getElementById("account-dashboard");
 
-if (manageSubForm) {
-  manageSubForm.addEventListener("submit", async (e) => {
+function setLoginStatus(type, message) {
+  loginStatus.className = `status ${type}`;
+  loginStatus.textContent = message;
+}
+
+function formatDate(isoStr) {
+  if (!isoStr) return "—";
+  return new Date(isoStr).toLocaleDateString("en-US", {
+    year: "numeric", month: "short", day: "numeric"
+  });
+}
+
+function getStatusInfo(data) {
+  if (data.revoked) return { label: "Revoked", cssClass: "status-badge--revoked" };
+  if (data.cancel_at_period_end) return { label: "Cancels at period end", cssClass: "status-badge--canceled" };
+  if (new Date(data.expires_at) < new Date()) return { label: "Expired", cssClass: "status-badge--expired" };
+  const status = data.subscription_status || "active";
+  if (status === "active" || status === "trialing") return { label: status === "trialing" ? "Trial" : "Active", cssClass: "status-badge--active" };
+  if (status === "past_due") return { label: "Past Due", cssClass: "status-badge--canceled" };
+  return { label: status, cssClass: "status-badge--active" };
+}
+
+function renderDashboard(data) {
+  accountLogin.hidden = true;
+  accountDashboard.hidden = false;
+
+  document.getElementById("account-email").textContent = data.email || "—";
+  document.getElementById("account-license-key").textContent = data.license_key || "—";
+  document.getElementById("account-plan").textContent =
+    data.plan ? formatPlanName(data.plan) : "—";
+
+  const statusInfo = getStatusInfo(data);
+  const statusEl = document.getElementById("account-status");
+  statusEl.textContent = statusInfo.label;
+  statusEl.className = `status-badge ${statusInfo.cssClass}`;
+
+  document.getElementById("account-expires").textContent =
+    data.cancel_at_period_end ? `Ends ${formatDate(data.expires_at)}` : formatDate(data.expires_at);
+  document.getElementById("account-devices").textContent =
+    `${data.machine_count || 0} of ${data.machine_limit || 2} used`;
+
+  // Also unlock downloads for paying customers
+  unlockPurchasedDownloads(data.license_key);
+
+  // Show team panel for lab plan owners
+  const teamPanel = document.getElementById("team-panel");
+  if (data.org && data.org.role === "owner") {
+    teamPanel.hidden = false;
+    renderTeamPanel(data.org);
+  } else {
+    teamPanel.hidden = true;
+  }
+}
+
+function showLoginForm() {
+  accountLogin.hidden = false;
+  accountDashboard.hidden = true;
+}
+
+// Check session on page load
+async function checkSession() {
+  try {
+    const res = await fetch(`${apiBase()}/v1/account`, {
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (data.authenticated && data.has_license) {
+      renderDashboard(data);
+      return true;
+    }
+  } catch { /* not logged in */ }
+  showLoginForm();
+  return false;
+}
+
+// Login form submit
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = manageSubEmail.value.trim();
+    const email = loginEmail.value.trim();
     if (!email) {
-      manageSubStatus.className = "status status-error";
-      manageSubStatus.textContent = "Please enter your email.";
+      setLoginStatus("status-error", "Please enter your email.");
       return;
     }
 
-    manageSubBtn.disabled = true;
-    manageSubBtn.textContent = "Redirecting…";
-    manageSubStatus.className = "status status-neutral";
-    manageSubStatus.textContent = "Looking up your subscription…";
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Sending…";
+    setLoginStatus("status-neutral", "Sending login link…");
+
+    try {
+      const res = await fetch(`${apiBase()}/v1/login`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not send login link");
+
+      setLoginStatus("status-success", "Check your email! We sent you a secure login link.");
+      loginBtn.textContent = "Link Sent ✓";
+    } catch (err) {
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Send Login Link";
+      setLoginStatus("status-error", err.message || "Something went wrong. Please try again.");
+    }
+  });
+}
+
+// Copy license key from dashboard
+const copyAccountKey = document.getElementById("copy-account-key");
+if (copyAccountKey) {
+  copyAccountKey.addEventListener("click", async () => {
+    const key = document.getElementById("account-license-key").textContent;
+    if (!key || key === "—") return;
+    try {
+      await navigator.clipboard.writeText(key);
+      copyAccountKey.textContent = "Copied!";
+      setTimeout(() => (copyAccountKey.textContent = "Copy"), 2000);
+    } catch { /* fallback: user can manually select */ }
+  });
+}
+
+// Manage subscription via Stripe portal
+const managePortalBtn = document.getElementById("manage-portal-btn");
+if (managePortalBtn) {
+  managePortalBtn.addEventListener("click", async () => {
+    const email = document.getElementById("account-email").textContent;
+    if (!email || email === "—") return;
+
+    managePortalBtn.disabled = true;
+    managePortalBtn.textContent = "Redirecting…";
 
     try {
       const res = await fetch(`${apiBase()}/v1/create-portal-session`, {
@@ -322,17 +442,139 @@ if (manageSubForm) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ email }),
       });
-
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not find subscription");
-
-      // Redirect to Stripe Customer Portal
+      if (!res.ok) throw new Error(data.error || "Could not open subscription portal");
       window.location.href = data.url;
     } catch (err) {
-      manageSubBtn.disabled = false;
-      manageSubBtn.textContent = "Manage Subscription";
-      manageSubStatus.className = "status status-error";
-      manageSubStatus.textContent = err.message || "Something went wrong. Please try again.";
+      managePortalBtn.disabled = false;
+      managePortalBtn.textContent = "Manage Subscription";
+      alert(err.message);
+    }
+  });
+}
+
+// Logout
+const logoutBtn = document.getElementById("logout-btn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await fetch(`${apiBase()}/v1/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch { /* best-effort */ }
+    showLoginForm();
+    setLoginStatus("status-neutral", "We'll email you a secure login link — no password needed.");
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Send Login Link";
+    loginEmail.value = "";
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Team Management (Lab plan)
+// ---------------------------------------------------------------------------
+
+function formatPlanName(plan) {
+  const names = { monthly: "Monthly", annual: "Annual", lab: "Lab (Monthly)", "lab-annual": "Lab (Annual)" };
+  return names[plan] || plan.charAt(0).toUpperCase() + plan.slice(1);
+}
+
+function renderTeamPanel(org) {
+  const memberList = document.getElementById("team-member-list");
+  const slots = document.getElementById("team-slots");
+  const members = org.members || [];
+
+  slots.textContent = `${members.length} of ${org.seat_limit} seats used`;
+  memberList.innerHTML = "";
+
+  members.forEach((email) => {
+    const li = document.createElement("li");
+    li.className = "team-member";
+
+    const emailSpan = document.createElement("span");
+    emailSpan.className = "team-member-email";
+    emailSpan.textContent = email;
+    li.appendChild(emailSpan);
+
+    // Don't show remove button for the owner
+    const ownerEmail = document.getElementById("account-email").textContent.toLowerCase();
+    if (email.toLowerCase() !== ownerEmail) {
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "btn btn-ghost btn-sm team-remove-btn";
+      removeBtn.textContent = "Remove";
+      removeBtn.addEventListener("click", () => removeMember(email));
+      li.appendChild(removeBtn);
+    } else {
+      const badge = document.createElement("span");
+      badge.className = "team-owner-badge";
+      badge.textContent = "Owner";
+      li.appendChild(badge);
+    }
+
+    memberList.appendChild(li);
+  });
+}
+
+async function removeMember(email) {
+  if (!confirm(`Remove ${email} from your team?`)) return;
+
+  try {
+    const res = await fetch(`${apiBase()}/v1/org/remove`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to remove member");
+    // Refresh dashboard
+    await checkSession();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+const inviteForm = document.getElementById("invite-form");
+const inviteEmail = document.getElementById("invite-email");
+const inviteBtn = document.getElementById("invite-btn");
+const inviteStatus = document.getElementById("invite-status");
+
+if (inviteForm) {
+  inviteForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = inviteEmail.value.trim();
+    if (!email) return;
+
+    inviteBtn.disabled = true;
+    inviteBtn.textContent = "Sending…";
+    inviteStatus.hidden = false;
+    inviteStatus.className = "status status-neutral";
+    inviteStatus.textContent = "Sending invite…";
+
+    try {
+      const res = await fetch(`${apiBase()}/v1/org/invite`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send invite");
+
+      inviteStatus.className = "status status-success";
+      inviteStatus.textContent = `Invite sent to ${email}`;
+      inviteEmail.value = "";
+      inviteBtn.textContent = "Invite";
+      inviteBtn.disabled = false;
+
+      // Refresh dashboard to show new member
+      await checkSession();
+    } catch (err) {
+      inviteBtn.disabled = false;
+      inviteBtn.textContent = "Invite";
+      inviteStatus.className = "status status-error";
+      inviteStatus.textContent = err.message;
     }
   });
 }
@@ -342,3 +584,10 @@ if (manageSubForm) {
 // ---------------------------------------------------------------------------
 handlePostPurchase();
 initAccess();
+checkSession().then((loggedIn) => {
+  // If URL hash is #account, scroll to account section
+  if (window.location.hash === "#account") {
+    const section = document.getElementById("manage-subscription");
+    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});

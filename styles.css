@@ -373,9 +373,9 @@ body {
 /* ── Pricing Cards ── */
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  max-width: 720px;
+  max-width: 960px;
 }
 
 .card-pricing {
@@ -456,6 +456,27 @@ body {
   text-align: center;
   padding: 4px 0;
   letter-spacing: 0.01em;
+}
+
+.card-pricing--lab {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.05) 0%, var(--bg-card) 60%);
+  box-shadow: var(--shadow-card), 0 0 40px rgba(34, 197, 94, 0.06);
+}
+
+.pricing-toggle {
+  text-align: center;
+}
+
+.pricing-alt {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.lab-checkout-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* ── Post-purchase success ── */
@@ -632,6 +653,184 @@ body {
   font-size: 0.8rem;
 }
 
+/* ── Account Dashboard ── */
+.panel-dashboard {
+  margin-top: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-email {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+}
+
+.dashboard-card {
+  padding: 18px 20px;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dashboard-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+
+.dashboard-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.license-key-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.license-key-row code {
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.88rem;
+  color: var(--accent-strong);
+  letter-spacing: 0.03em;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.status-badge--active {
+  color: #86efac;
+  background: var(--success-soft);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-badge--canceled {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.status-badge--expired,
+.status-badge--revoked {
+  color: #fca5a5;
+  background: var(--error-soft);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.dashboard-actions {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Team Management Panel ── */
+.team-panel {
+  border-top: 1px solid var(--border);
+  padding: 20px;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.team-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.team-slots {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--accent-soft);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: var(--accent-strong);
+}
+
+.team-member-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+
+.team-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.team-member-email {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.team-owner-badge {
+  font-size: 0.73rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent-strong);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent-soft);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.team-remove-btn {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 0.75rem;
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.2);
+}
+
+.team-remove-btn:hover {
+  background: var(--error-soft);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.invite-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
 /* ── Caption ── */
 .caption {
   color: var(--text-muted);
@@ -692,6 +891,10 @@ body {
   .pricing-grid {
     grid-template-columns: 1fr;
     max-width: 400px;
+  }
+
+  .invite-form {
+    grid-template-columns: 1fr;
   }
 }
 

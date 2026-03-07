@@ -174,26 +174,115 @@
           <button type="button" class="btn btn-primary btn-block btn-checkout" data-plan="annual">Start Free
             Trial</button>
         </article>
+
+        <article class="card card-pricing card-pricing--lab">
+          <div class="badge badge-accent pricing-badge">For Teams</div>
+          <div class="pricing-head">
+            <h3>Lab</h3>
+            <p class="pricing-desc">For research groups — up to 5 users</p>
+          </div>
+          <div class="pricing-amount">
+            <span class="price">$59</span>
+            <span class="price-period">/month</span>
+          </div>
+          <div class="pricing-toggle">
+            <span class="pricing-alt">or $499/year (save 30%)</span>
+          </div>
+          <ul class="pricing-features">
+            <li>Everything in Monthly</li>
+            <li>Up to 5 users</li>
+            <li>10 device activations</li>
+            <li>PI admin dashboard</li>
+            <li>Invite team members by email</li>
+          </ul>
+          <p class="pricing-trial">7-day free trial — no charge today</p>
+          <div class="lab-checkout-btns">
+            <button type="button" class="btn btn-secondary btn-block btn-checkout" data-plan="lab">Monthly —
+              $59/mo</button>
+            <button type="button" class="btn btn-ghost btn-block btn-checkout" data-plan="lab-annual">Annual —
+              $499/yr</button>
+          </div>
+        </article>
       </div>
     </section>
 
-    <!-- Manage Subscription -->
+    <!-- Account -->
     <section id="manage-subscription" class="section reveal reveal-delay-3">
       <div class="section-header">
         <div class="badge badge-muted">Account</div>
-        <h2>Manage your subscription</h2>
-        <p class="section-sub">Update payment details, change plans, or cancel anytime.</p>
+        <h2>Your account</h2>
+        <p class="section-sub">View your license, manage your subscription, and track device activations.</p>
       </div>
-      <div class="panel panel-compact">
-        <form id="manage-sub-form" class="access-form">
-          <label for="manage-sub-email" class="sr-only">Email used at checkout</label>
-          <input id="manage-sub-email" name="email" class="input" type="email" autocomplete="email"
-            placeholder="Email used at checkout" required>
-          <button type="submit" class="btn btn-primary" id="manage-sub-btn">Manage Subscription</button>
+
+      <!-- Login form (shown when logged out) -->
+      <div id="account-login" class="panel panel-compact">
+        <form id="login-form" class="access-form">
+          <label for="login-email" class="sr-only">Your email address</label>
+          <input id="login-email" name="email" class="input" type="email" autocomplete="email"
+            placeholder="Enter your email" required>
+          <button type="submit" class="btn btn-primary" id="login-btn">Send Login Link</button>
         </form>
-        <p id="manage-sub-status" class="status status-neutral" role="status" aria-live="polite">
-          Enter the email you used when subscribing.
+        <p id="login-status" class="status status-neutral" role="status" aria-live="polite">
+          We'll email you a secure login link — no password needed.
         </p>
+      </div>
+
+      <!-- Account dashboard (shown when logged in) -->
+      <div id="account-dashboard" class="panel panel-dashboard" hidden>
+        <div class="dashboard-header">
+          <div class="dashboard-email" id="account-email"></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="logout-btn">Log Out</button>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <div class="dashboard-label">License Key</div>
+            <div class="dashboard-value license-key-row">
+              <code id="account-license-key">—</code>
+              <button type="button" class="btn btn-ghost btn-sm" id="copy-account-key">Copy</button>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-label">Plan</div>
+            <div class="dashboard-value" id="account-plan">—</div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-label">Status</div>
+            <div class="dashboard-value">
+              <span class="status-badge" id="account-status">—</span>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-label">Renews / Expires</div>
+            <div class="dashboard-value" id="account-expires">—</div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-label">Devices</div>
+            <div class="dashboard-value" id="account-devices">—</div>
+          </div>
+        </div>
+
+        <div class="dashboard-actions">
+          <button type="button" class="btn btn-secondary" id="manage-portal-btn">Manage Subscription</button>
+        </div>
+
+        <!-- Team management (lab plan owners only) -->
+        <div id="team-panel" class="team-panel" hidden>
+          <div class="team-header">
+            <h3 class="team-title">Team Members</h3>
+            <span class="team-slots" id="team-slots">0 of 5 seats used</span>
+          </div>
+          <ul class="team-member-list" id="team-member-list"></ul>
+          <form id="invite-form" class="invite-form">
+            <input id="invite-email" type="email" class="input" placeholder="colleague@university.edu" required>
+            <button type="submit" class="btn btn-primary" id="invite-btn">Invite</button>
+          </form>
+          <p id="invite-status" class="status status-neutral" role="status" aria-live="polite" hidden></p>
+        </div>
       </div>
     </section>
 
