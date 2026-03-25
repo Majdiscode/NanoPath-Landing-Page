@@ -589,10 +589,37 @@ body {
   gap: 16px;
 }
 
+.invite-license-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.invite-license-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.invite-license-display {
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 0;
+}
+
+.invite-license-display code {
+  overflow-wrap: anywhere;
+}
+
 .access-form {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
+}
+
+.access-form-beta {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
 }
 
 .input {
@@ -941,6 +968,10 @@ body {
   }
 
   .invite-form {
+    grid-template-columns: 1fr;
+  }
+
+  .access-form-beta {
     grid-template-columns: 1fr;
   }
 }

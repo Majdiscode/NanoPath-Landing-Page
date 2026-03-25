@@ -329,10 +329,13 @@
       <div class="section-header">
         <div class="badge badge-muted">Beta Program</div>
         <h2>Have an invite key?</h2>
-        <p class="section-sub">Enter your tester key to unlock free downloads during the beta period.</p>
+        <p class="section-sub">Enter your tester key and email to redeem a one-time beta license and unlock downloads.</p>
       </div>
       <div class="panel panel-compact">
-        <form id="access-form" class="access-form">
+        <form id="access-form" class="access-form access-form-beta">
+          <label for="access-email" class="sr-only">Your email address</label>
+          <input id="access-email" name="email" class="input" type="email" autocomplete="email"
+            placeholder="Your email address" required>
           <label for="access-key" class="sr-only">Tester access key</label>
           <input id="access-key" name="access-key" class="input" type="text" autocomplete="off"
             placeholder="Enter your tester key" required>
@@ -341,6 +344,17 @@
         <p id="access-status" class="status status-neutral" role="status" aria-live="polite">
           Enter a valid invite key to enable downloads.
         </p>
+        <div id="invite-license-panel" class="invite-license-panel" hidden>
+          <p class="invite-license-title">Beta license key</p>
+          <div class="license-display invite-license-display">
+            <code id="invite-license-key-value">—</code>
+            <button type="button" id="copy-invite-license-key" class="btn btn-ghost btn-sm">Copy</button>
+          </div>
+          <p id="invite-license-status" class="caption">
+            Save this key. It is tied to the email you redeemed with and you will need it in the NanoPath desktop app after download.
+          </p>
+          <button type="button" id="reset-beta-session" class="btn btn-ghost btn-sm">Reset Test Session</button>
+        </div>
       </div>
     </section>
 

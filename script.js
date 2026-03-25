@@ -10,6 +10,9 @@ const CONFIG = {
   fallbackLocal: "http://127.0.0.1:8787",
   storageKey: "nanopath_beta_access_key",
   purchaseStorageKey: "nanopath_purchased",
+  inviteRedeemedStorageKey: "nanopath_invite_redeemed",
+  inviteLicenseStorageKey: "nanopath_invite_license_key",
+  inviteEmailStorageKey: "nanopath_invite_email",
   validKeyHashes: [
     "e860b3d7e556ebd81f4f1d8c5adfa4bfc55d40cbb7a213682faed15d49eea1cf",
     "4614d42a75056835c1ecf373a846e127cf0e840f6bbcc90301ea762fe97c6f2c"
@@ -21,6 +24,7 @@ const CONFIG = {
 // ---------------------------------------------------------------------------
 const el = {
   accessForm: document.getElementById("access-form"),
+  accessEmail: document.getElementById("access-email"),
   accessKey: document.getElementById("access-key"),
   accessStatus: document.getElementById("access-status"),
   downloadMac: document.getElementById("download-mac"),
@@ -29,7 +33,12 @@ const el = {
   purchaseSuccess: document.getElementById("purchase-success"),
   licenseKeyValue: document.getElementById("license-key-value"),
   copyLicenseKey: document.getElementById("copy-license-key"),
-  licenseStatus: document.getElementById("license-status")
+  licenseStatus: document.getElementById("license-status"),
+  inviteLicensePanel: document.getElementById("invite-license-panel"),
+  inviteLicenseValue: document.getElementById("invite-license-key-value"),
+  inviteLicenseStatus: document.getElementById("invite-license-status"),
+  copyInviteLicenseKey: document.getElementById("copy-invite-license-key"),
+  resetBetaSession: document.getElementById("reset-beta-session")
 };
 
 const downloadUrls = { mac: null, windows: null };
@@ -67,6 +76,35 @@ async function isValidKey(raw) {
 function setStatus(type, message) {
   el.accessStatus.className = `status ${type}`;
   el.accessStatus.textContent = message;
+}
+
+function showInviteLicenseKey(licenseKey) {
+  if (!licenseKey || !el.inviteLicensePanel || !el.inviteLicenseValue) return;
+  el.inviteLicensePanel.hidden = false;
+  el.inviteLicenseValue.textContent = licenseKey;
+}
+
+function persistInviteLicenseKey(licenseKey) {
+  if (!licenseKey) return;
+  localStorage.setItem(CONFIG.inviteLicenseStorageKey, licenseKey);
+  showInviteLicenseKey(licenseKey);
+}
+
+function persistInviteEmail(email) {
+  if (!email) return;
+  localStorage.setItem(CONFIG.inviteEmailStorageKey, email);
+  if (typeof loginEmail !== "undefined" && loginEmail) {
+    loginEmail.value = email;
+  }
+}
+
+function hideInviteLicenseKey() {
+  if (el.inviteLicensePanel) {
+    el.inviteLicensePanel.hidden = true;
+  }
+  if (el.inviteLicenseValue) {
+    el.inviteLicenseValue.textContent = "—";
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -134,8 +172,20 @@ function unlockPurchasedDownloads(licenseKey) {
 function clearAccess(msg) {
   activeKey = "";
   localStorage.removeItem(CONFIG.storageKey);
+  localStorage.removeItem(CONFIG.inviteRedeemedStorageKey);
+  localStorage.removeItem(CONFIG.inviteLicenseStorageKey);
+  localStorage.removeItem(CONFIG.inviteEmailStorageKey);
+  hideInviteLicenseKey();
   updateDownloads(false);
-  if (msg) setStatus("status-error", msg);
+  if (el.accessEmail) {
+    el.accessEmail.value = "";
+  }
+  if (el.accessKey) {
+    el.accessKey.value = "";
+  }
+  if (msg) {
+    setStatus(msg.type || "status-error", msg.message || msg);
+  }
 }
 
 function clearKeyFromUrl() {
@@ -159,8 +209,16 @@ async function initAccess() {
   }
 
   // Check if user redeemed an invite key (stored in localStorage)
-  const redeemedKey = localStorage.getItem("nanopath_invite_redeemed");
+  const redeemedKey = localStorage.getItem(CONFIG.inviteRedeemedStorageKey);
   if (redeemedKey) {
+    const inviteLicenseKey = localStorage.getItem(CONFIG.inviteLicenseStorageKey);
+    const inviteEmail = localStorage.getItem(CONFIG.inviteEmailStorageKey);
+    if (inviteLicenseKey) {
+      showInviteLicenseKey(inviteLicenseKey);
+    }
+    if (inviteEmail) {
+      persistInviteEmail(inviteEmail);
+    }
     updateDownloads(true);
     setStatus("status-success", "Invite key accepted. Downloads are available below.");
     return;
@@ -170,20 +228,23 @@ async function initAccess() {
   const keyFromUrl = new URLSearchParams(location.search).get("key");
   if (keyFromUrl) {
     clearKeyFromUrl();
-    await redeemInviteKey(keyFromUrl);
+    if (el.accessKey) {
+      el.accessKey.value = keyFromUrl.trim().toUpperCase();
+    }
+    setStatus("status-neutral", "Invite key loaded. Enter your email to complete redemption.");
     return;
   }
 
   setStatus("status-neutral", "Enter a valid invite key to enable downloads.");
 }
 
-async function redeemInviteKey(key) {
+async function redeemInviteKey(key, email) {
   try {
     const res = await fetch(`${apiBase()}/v1/redeem-invite`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ key }),
+      body: JSON.stringify({ key, email }),
     });
     const data = await res.json();
 
@@ -192,9 +253,11 @@ async function redeemInviteKey(key) {
       return false;
     }
 
-    localStorage.setItem("nanopath_invite_redeemed", key.trim().toUpperCase());
+    localStorage.setItem(CONFIG.inviteRedeemedStorageKey, key.trim().toUpperCase());
+    persistInviteLicenseKey(data.license_key || "");
+    persistInviteEmail(data.email || email);
     updateDownloads(true);
-    setStatus("status-success", "Invite key accepted! Downloads are available below.");
+    setStatus("status-success", "Invite key accepted! Downloads are available below. Save the beta license key for the desktop app.");
     return true;
   } catch {
     setStatus("status-error", "Could not validate key. Please try again.");
@@ -204,13 +267,18 @@ async function redeemInviteKey(key) {
 
 async function onAccessSubmit(e) {
   e.preventDefault();
+  const email = el.accessEmail?.value.trim() || "";
   const raw = el.accessKey.value.trim();
+  if (!email) {
+    setStatus("status-error", "Enter your email address.");
+    return;
+  }
   if (!raw) {
     setStatus("status-error", "Enter an invite key.");
     return;
   }
   setStatus("status-neutral", "Validating…");
-  const ok = await redeemInviteKey(raw);
+  const ok = await redeemInviteKey(raw, email);
   if (ok) el.accessKey.value = "";
 }
 
@@ -305,6 +373,49 @@ el.copyLicenseKey.addEventListener("click", async () => {
     el.licenseStatus.textContent = "Could not copy automatically. Please select and copy manually.";
   }
 });
+
+if (el.copyInviteLicenseKey) {
+  el.copyInviteLicenseKey.addEventListener("click", async () => {
+    const key = el.inviteLicenseValue?.textContent;
+    if (!key || key === "—") return;
+
+    try {
+      await navigator.clipboard.writeText(key);
+      el.copyInviteLicenseKey.textContent = "Copied!";
+      if (el.inviteLicenseStatus) {
+        el.inviteLicenseStatus.textContent = "Beta license key copied.";
+      }
+      setTimeout(() => {
+        el.copyInviteLicenseKey.textContent = "Copy";
+        if (el.inviteLicenseStatus) {
+          el.inviteLicenseStatus.textContent = "Save this key. You will need it in the NanoPath desktop app after download.";
+        }
+      }, 2000);
+    } catch {
+      if (el.inviteLicenseStatus) {
+        el.inviteLicenseStatus.textContent = "Could not copy automatically. Please copy the beta license key manually.";
+      }
+    }
+  });
+}
+
+if (el.resetBetaSession) {
+  el.resetBetaSession.addEventListener("click", async () => {
+    try {
+      await fetch(`${apiBase()}/v1/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      /* best effort */
+    }
+
+    clearAccess({
+      type: "status-neutral",
+      message: "Beta browser session cleared. Use a new invite key or a fresh private window to test the first-time flow again.",
+    });
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Account Login + Dashboard
