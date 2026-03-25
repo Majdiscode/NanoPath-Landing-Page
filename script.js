@@ -197,11 +197,45 @@ function clearKeyFromUrl() {
 }
 
 async function initAccess() {
+  updateDownloads(false);
   await fetchRelease();
 
-  // Free access mode — downloads are always unlocked
-  updateDownloads(true);
-  setStatus("status-success", "Downloads are available below.");
+  // Check if user has a purchased license (auto-unlock downloads)
+  const purchasedKey = localStorage.getItem(CONFIG.purchaseStorageKey);
+  if (purchasedKey) {
+    updateDownloads(true);
+    setStatus("status-success", "License active. Downloads are available below.");
+    return;
+  }
+
+  // Check if user redeemed an invite key (stored in localStorage)
+  const redeemedKey = localStorage.getItem(CONFIG.inviteRedeemedStorageKey);
+  if (redeemedKey) {
+    const inviteLicenseKey = localStorage.getItem(CONFIG.inviteLicenseStorageKey);
+    const inviteEmail = localStorage.getItem(CONFIG.inviteEmailStorageKey);
+    if (inviteLicenseKey) {
+      showInviteLicenseKey(inviteLicenseKey);
+    }
+    if (inviteEmail) {
+      persistInviteEmail(inviteEmail);
+    }
+    updateDownloads(true);
+    setStatus("status-success", "Invite key accepted. Downloads are available below.");
+    return;
+  }
+
+  // Auto-redeem from query param
+  const keyFromUrl = new URLSearchParams(location.search).get("key");
+  if (keyFromUrl) {
+    clearKeyFromUrl();
+    if (el.accessKey) {
+      el.accessKey.value = keyFromUrl.trim().toUpperCase();
+    }
+    setStatus("status-neutral", "Invite key loaded. Enter your email to complete redemption.");
+    return;
+  }
+
+  setStatus("status-neutral", "Enter a valid invite key to enable downloads.");
 }
 
 async function redeemInviteKey(key, email) {
