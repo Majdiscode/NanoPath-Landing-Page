@@ -14,8 +14,6 @@ const CONFIG = {
     "e860b3d7e556ebd81f4f1d8c5adfa4bfc55d40cbb7a213682faed15d49eea1cf",
     "4614d42a75056835c1ecf373a846e127cf0e840f6bbcc90301ea762fe97c6f2c"
   ],
-  releaseApiUrl:
-    "https://api.github.com/repos/Majdiscode/NanoPath-Landing-Page/releases/latest"
 };
 
 // ---------------------------------------------------------------------------
@@ -72,31 +70,28 @@ function setStatus(type, message) {
 }
 
 // ---------------------------------------------------------------------------
-// GitHub release info
+// Release info (fetched from Worker — no direct GitHub URLs exposed)
 // ---------------------------------------------------------------------------
 async function fetchRelease() {
   try {
-    const res = await fetch(CONFIG.releaseApiUrl);
+    const res = await fetch(`${apiBase()}/v1/release-info`);
     if (!res.ok) return;
     const data = await res.json();
 
-    if (el.versionBadge && data.tag_name) {
-      el.versionBadge.textContent = `Latest: ${data.tag_name}`;
+    if (el.versionBadge && data.version) {
+      el.versionBadge.textContent = `Latest: ${data.version}`;
     }
 
-    for (const asset of data.assets || []) {
-      const name = asset.name.toLowerCase();
-      if (name.endsWith(".dmg")) downloadUrls.mac = asset.browser_download_url;
-      else if (name.endsWith(".exe") && !name.endsWith(".blockmap"))
-        downloadUrls.windows = asset.browser_download_url;
-    }
+    // Store platform availability (not direct URLs)
+    downloadUrls.mac = data.platforms?.mac ? `${apiBase()}/v1/download/mac` : null;
+    downloadUrls.windows = data.platforms?.windows ? `${apiBase()}/v1/download/windows` : null;
   } catch {
     /* silent */
   }
 }
 
 // ---------------------------------------------------------------------------
-// Download state
+// Download state — buttons point to Worker proxy (requires session cookie)
 // ---------------------------------------------------------------------------
 function updateDownloads(unlocked) {
   const items = [
