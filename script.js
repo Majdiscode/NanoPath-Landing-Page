@@ -158,47 +158,60 @@ async function initAccess() {
     return;
   }
 
-  if (!window.crypto?.subtle) {
-    setStatus("status-error", "Secure key validation is unavailable in this browser.");
+  // Check if user redeemed an invite key (stored in localStorage)
+  const redeemedKey = localStorage.getItem("nanopath_invite_redeemed");
+  if (redeemedKey) {
+    updateDownloads(true);
+    setStatus("status-success", "Invite key accepted. Downloads are available below.");
     return;
   }
 
-  // Auto-unlock from query param
+  // Auto-redeem from query param
   const keyFromUrl = new URLSearchParams(location.search).get("key");
   if (keyFromUrl) {
-    if (await isValidKey(keyFromUrl)) {
-      setUnlocked(keyFromUrl);
-    } else {
-      clearAccess("This invite key is invalid.");
-    }
     clearKeyFromUrl();
+    await redeemInviteKey(keyFromUrl);
     return;
   }
 
-  // Restore from storage
-  const saved = localStorage.getItem(CONFIG.storageKey);
-  if (saved && (await isValidKey(saved))) {
-    setUnlocked(saved);
-    return;
-  }
-
-  if (saved) localStorage.removeItem(CONFIG.storageKey);
   setStatus("status-neutral", "Enter a valid invite key to enable downloads.");
+}
+
+async function redeemInviteKey(key) {
+  try {
+    const res = await fetch(`${apiBase()}/v1/redeem-invite`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ key }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      setStatus("status-error", data.error || "Invalid invite key.");
+      return false;
+    }
+
+    localStorage.setItem("nanopath_invite_redeemed", key.trim().toUpperCase());
+    updateDownloads(true);
+    setStatus("status-success", "Invite key accepted! Downloads are available below.");
+    return true;
+  } catch {
+    setStatus("status-error", "Could not validate key. Please try again.");
+    return false;
+  }
 }
 
 async function onAccessSubmit(e) {
   e.preventDefault();
-  const raw = el.accessKey.value;
-  if (!raw.trim()) {
-    setStatus("status-error", "Enter a tester key.");
+  const raw = el.accessKey.value.trim();
+  if (!raw) {
+    setStatus("status-error", "Enter an invite key.");
     return;
   }
-  if (await isValidKey(raw)) {
-    setUnlocked(raw);
-    el.accessKey.value = "";
-  } else {
-    setStatus("status-error", "Invalid key. Check and try again.");
-  }
+  setStatus("status-neutral", "Validating…");
+  const ok = await redeemInviteKey(raw);
+  if (ok) el.accessKey.value = "";
 }
 
 el.accessForm.addEventListener("submit", onAccessSubmit);
